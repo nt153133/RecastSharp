@@ -2,6 +2,8 @@
 #define DETOUR_WRAPPER_H
 
 #include "WrapperCommon.h"
+#include "DetourCommon.h"
+#include "DetourNavMesh.h"
 
 EXPORT_API bool dtwCreateNavMeshData(dtwNavMeshCreateParams* params, unsigned char** outData, int* outDataSize);
 
@@ -32,5 +34,13 @@ EXPORT_API bool dtwStatusFailed(dtwStatus status);
 EXPORT_API bool dtwStatusInProgress(dtwStatus status);
 EXPORT_API bool dtwStatusDetail(dtwStatus status, unsigned int detail);
 
+EXPORT_API bool getSteerTarget(dtwNavMeshQuery* query, const float* startPos, const float* endPos,
+	float minTargetDist, const dtPolyRef* path, unsigned int pathSize,
+	float* steerPos, unsigned char& steerPosFlag, dtPolyRef& steerPosRef);
+
+EXPORT_API float dtSqrt(float x);
+EXPORT_API bool inRangeYZX(const float* v1, const float* v2, float r, float h);
+EXPORT_API unsigned int fixupCorridor(dtPolyRef* path, unsigned int npath, unsigned int maxPath,
+	const dtPolyRef* visited, unsigned int nvisited);
 
 #endif

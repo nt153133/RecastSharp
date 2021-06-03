@@ -83,6 +83,27 @@ namespace RecastSharp.DetourNative
         );
 
         [DllImport(DLL_NAME)]
+        public static extern DtwStatus findSmoothPath(
+            IntPtr query, IntPtr filter, ref float startPos, ref float endPos,
+            ref int polyPath, int polyPathSize,
+            ref float smoothPath, ref int smoothPathSize, int maxSmoothPathSize);
+        
+        [DllImport(DLL_NAME)]
+        public static extern DtwStatus dtwNavMeshQuery_closestPointOnPoly(
+            IntPtr query,
+            int nearestRef,
+            ref float pos, ref float closest,
+            ref bool posOverPoly
+        );
+        
+        [DllImport(DLL_NAME)]
+        public static extern DtwStatus dtwNavMeshQuery_closestPointOnPolyBoundary(
+            IntPtr query,
+            int nearestRef,
+            ref float pos, ref float closest
+        );
+
+        [DllImport(DLL_NAME)]
         public static extern DtwStatus dtwNavMeshQuery_FindStraightPath(
             IntPtr query,
             ref float startPos, ref float endPos,
