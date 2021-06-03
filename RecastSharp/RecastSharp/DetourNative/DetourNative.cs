@@ -27,7 +27,7 @@ namespace RecastSharp.DetourNative
 #elif LINUX
         private const string DLL_NAME = "native/libRecastWrapper64";
 #else
-        private const string DLL_NAME = "native/RecastWrapper64";
+        private const string DLL_NAME = "RecastWrapper64";
 #endif
 
         [DllImport(DLL_NAME)]

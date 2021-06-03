@@ -102,9 +102,9 @@ project "RecastWrapper"
 
 	filter "platforms:Win32" 
 		targetname "RecastWrapper32"
-		targetdir "../RecastSharp/RecastSharp/native"
+		targetdir "../RecastSharp/RecastSharp/Costura32"
 
 	filter "platforms:Win64"
 		targetname "RecastWrapper64"
-		targetdir "../RecastSharp/RecastSharp/native"
+		targetdir "../RecastSharp/RecastSharp/Costura64"
 
