@@ -6,3 +6,8 @@ RecastSharp/RecastSharpTest/.vs
 RecastSharp/RecastSharpTest/obj
 RecastSharp/RecastSharpTest/bin
 RecastCWrapper/Build
+
+# Native build byproducts (the .dll is committed; these regenerate on each build)
+RecastSharp/RecastSharp/Costura64/*.exp
+RecastSharp/RecastSharp/Costura64/*.lib
+RecastSharp/RecastSharp/Costura64/*.pdb
