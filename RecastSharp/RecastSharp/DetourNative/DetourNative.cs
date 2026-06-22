@@ -25,7 +25,19 @@ namespace RecastSharp.DetourNative
         private const string DLL_NAME = NativeLibraryResolver.LibraryName;
 
         [DllImport(DLL_NAME)]
+        public static extern IntPtr dtwAlloc(int size);
+
+        [DllImport(DLL_NAME)]
         public static extern void dtwFree(IntPtr ptr);
+
+        [DllImport(DLL_NAME)]
+        public static extern void dtwFreeNavMesh(IntPtr navmesh);
+
+        [DllImport(DLL_NAME)]
+        public static extern void dtwFreeNavMeshQuery(IntPtr query);
+
+        [DllImport(DLL_NAME)]
+        public static extern void dtwFreeQueryFilter(IntPtr filter);
 
         [DllImport(DLL_NAME)]
         public static extern bool dtwCreateNavMeshData(ref DtNavMeshCreateParams createParams, out byte* outData, out int outDataSize);

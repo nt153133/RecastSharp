@@ -26,7 +26,16 @@ EXPORT_API dtwStatus dtwNavMeshQuery_FindPath(dtwNavMeshQuery* query,
 	const float* startPos, const float* endPos,
 	const dtwQueryFilter* filter, dtwPolyRef* path, int* pathCount, const int maxPath);
 
+EXPORT_API void* dtwAlloc(int size);
 EXPORT_API void dtwFree(void* ptr);
+
+// Type-correct deallocators. dtwFree only calls dtFree (no destructor), which leaks
+// the internal allocations of a navmesh/query and is undefined behavior for the
+// new'd filter/polyref. Use these to release the matching dtwAlloc* handles.
+EXPORT_API void dtwFreeNavMesh(dtwNavMesh* navmesh);
+EXPORT_API void dtwFreeNavMeshQuery(dtwNavMeshQuery* query);
+EXPORT_API void dtwFreeQueryFilter(dtwQueryFilter* filter);
+EXPORT_API void dtwFreePolyRef(dtwPolyRef* polyRef);
 
 
 EXPORT_API bool dtwStatusSucceed(dtwStatus status);

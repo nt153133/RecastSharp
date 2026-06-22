@@ -1,4 +1,5 @@
 #include "DetourWrapper.h"
+#include "DetourAlloc.h"
 #include "DetourNavMeshBuilder.h"
 #include "DetourNavMesh.h"
 
@@ -112,8 +113,30 @@ EXPORT_API dtwStatus dtwNavMeshQuery_FindStraightPath(dtwNavMeshQuery* query, co
 	return dtQuery->findStraightPath(startPos, endPos, dtPath, pathSize, straightPath, straightPathFlags, dtStraightPathRefs, straightPathCount, maxStraightPath, options);
 }
 
+// Allocate with Detour's allocator so tile data added with DT_TILE_FREE_DATA is
+// released by the matching dtFree when the navmesh is destroyed.
+EXPORT_API void* dtwAlloc(int size) {
+	return dtAlloc(size, DT_ALLOC_PERM);
+}
+
 EXPORT_API void dtwFree(void* ptr) {
 	dtFree(ptr);
+}
+
+EXPORT_API void dtwFreeNavMesh(dtwNavMesh* navmesh) {
+	dtFreeNavMesh((dtNavMesh*)navmesh);
+}
+
+EXPORT_API void dtwFreeNavMeshQuery(dtwNavMeshQuery* query) {
+	dtFreeNavMeshQuery((dtNavMeshQuery*)query);
+}
+
+EXPORT_API void dtwFreeQueryFilter(dtwQueryFilter* filter) {
+	delete (dtQueryFilter*)filter;
+}
+
+EXPORT_API void dtwFreePolyRef(dtwPolyRef* polyRef) {
+	delete (dtPolyRef*)polyRef;
 }
 
 EXPORT_API bool dtwStatusSucceed(dtwStatus status) {
