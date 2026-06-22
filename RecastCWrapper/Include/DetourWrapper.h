@@ -57,6 +57,9 @@ EXPORT_API bool rcwCreateNavMeshTileData(void* polyMesh, void* polyMeshDetail,
 
 // Flatten a detail mesh into a world-space triangle-soup (9 floats/triangle); free with dtwFree.
 EXPORT_API bool rcwGetPolyMeshDetailTriVerts(void* polyMeshDetail, float** outVerts, int* outFloatCount);
+
+// Flatten a loaded navmesh's walkable surface into a world-space triangle-soup; free with dtwFree.
+EXPORT_API bool dtwGetNavMeshTriVerts(dtwNavMesh* navmesh, float** outVerts, int* outFloatCount);
 EXPORT_API bool inRangeYZX(const float* v1, const float* v2, float r, float h);
 EXPORT_API unsigned int fixupCorridor(dtPolyRef* path, unsigned int npath, unsigned int maxPath,
 	const dtPolyRef* visited, unsigned int nvisited);

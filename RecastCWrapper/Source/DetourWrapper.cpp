@@ -499,3 +499,61 @@ EXPORT_API bool rcwGetPolyMeshDetailTriVerts(void* polyMeshDetail, float** outVe
 	*outFloatCount = o;
 	return true;
 }
+
+// Flattens a loaded Detour navmesh's walkable surface into a world-space triangle soup (9 floats
+// per triangle) by walking every tile's per-poly detail mesh. Lets a viewer render a .nav directly.
+// outVerts is dtAlloc'd; free it with dtwFree.
+EXPORT_API bool dtwGetNavMeshTriVerts(dtwNavMesh* navmeshHandle, float** outVerts, int* outFloatCount)
+{
+	auto mesh = (const dtNavMesh*)navmeshHandle;
+	*outVerts = nullptr;
+	*outFloatCount = 0;
+	if (!mesh)
+		return false;
+
+	int total = 0;
+	for (int i = 0; i < mesh->getMaxTiles(); ++i)
+	{
+		const dtMeshTile* tile = mesh->getTile(i);
+		if (!tile || !tile->header)
+			continue;
+		for (int p = 0; p < tile->header->polyCount; ++p)
+			total += tile->detailMeshes[p].triCount;
+	}
+	if (total == 0)
+		return true;
+
+	float* out = (float*)dtAlloc(sizeof(float) * total * 9, DT_ALLOC_PERM);
+	if (!out)
+		return false;
+
+	int o = 0;
+	for (int i = 0; i < mesh->getMaxTiles(); ++i)
+	{
+		const dtMeshTile* tile = mesh->getTile(i);
+		if (!tile || !tile->header)
+			continue;
+		for (int p = 0; p < tile->header->polyCount; ++p)
+		{
+			const dtPoly* poly = &tile->polys[p];
+			const dtPolyDetail* pd = &tile->detailMeshes[p];
+			for (int j = 0; j < pd->triCount; ++j)
+			{
+				const unsigned char* t = &tile->detailTris[(pd->triBase + j) * 4];
+				for (int k = 0; k < 3; ++k)
+				{
+					const float* v = t[k] < poly->vertCount
+						? &tile->verts[poly->verts[t[k]] * 3]
+						: &tile->detailVerts[(pd->vertBase + t[k] - poly->vertCount) * 3];
+					out[o++] = v[0];
+					out[o++] = v[1];
+					out[o++] = v[2];
+				}
+			}
+		}
+	}
+
+	*outVerts = out;
+	*outFloatCount = o;
+	return true;
+}

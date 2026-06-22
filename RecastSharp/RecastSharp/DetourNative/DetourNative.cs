@@ -39,6 +39,11 @@ namespace RecastSharp.DetourNative
         [DllImport(DLL_NAME)]
         public static extern void dtwFreeQueryFilter(IntPtr filter);
 
+        // Loaded navmesh walkable surface -> world-space triangle soup (9 floats/tri). Free with dtwFree.
+        [DllImport(DLL_NAME)]
+        [return: MarshalAs(UnmanagedType.I1)]
+        public static extern bool dtwGetNavMeshTriVerts(IntPtr navmesh, out IntPtr outVerts, out int outFloatCount);
+
         [DllImport(DLL_NAME)]
         public static extern bool dtwCreateNavMeshData(ref DtNavMeshCreateParams createParams, out byte* outData, out int outDataSize);
 
