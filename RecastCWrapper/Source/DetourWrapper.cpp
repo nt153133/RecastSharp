@@ -461,3 +461,41 @@ EXPORT_API bool rcwCreateNavMeshTileData(void* polyMesh, void* polyMeshDetail,
 
 	return dtCreateNavMeshData(&params, outData, outDataSize);
 }
+
+// Flattens a Recast detail mesh into a triangle-soup of world-space vertices (9 floats per
+// triangle: 3 verts x xyz), resolving each sub-mesh's base offsets. Lets callers export the
+// actual walkable navmesh surface as geometry. outVerts is dtAlloc'd; free it with dtwFree.
+EXPORT_API bool rcwGetPolyMeshDetailTriVerts(void* polyMeshDetail, float** outVerts, int* outFloatCount)
+{
+	auto dmesh = (rcPolyMeshDetail*)polyMeshDetail;
+	*outVerts = nullptr;
+	*outFloatCount = 0;
+	if (!dmesh || dmesh->ntris == 0)
+		return true;
+
+	float* out = (float*)dtAlloc(sizeof(float) * dmesh->ntris * 9, DT_ALLOC_PERM);
+	if (!out)
+		return false;
+
+	int o = 0;
+	for (int m = 0; m < dmesh->nmeshes; ++m)
+	{
+		const unsigned int bverts = dmesh->meshes[m * 4 + 0];
+		const unsigned int btris = dmesh->meshes[m * 4 + 2];
+		const unsigned int ntris = dmesh->meshes[m * 4 + 3];
+		const float* verts = &dmesh->verts[bverts * 3];
+		const unsigned char* tris = &dmesh->tris[btris * 4];
+		for (unsigned int t = 0; t < ntris; ++t)
+			for (int k = 0; k < 3; ++k)
+			{
+				const float* v = &verts[tris[t * 4 + k] * 3];
+				out[o++] = v[0];
+				out[o++] = v[1];
+				out[o++] = v[2];
+			}
+	}
+
+	*outVerts = out;
+	*outFloatCount = o;
+	return true;
+}

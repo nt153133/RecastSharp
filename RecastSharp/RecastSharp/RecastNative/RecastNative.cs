@@ -115,5 +115,10 @@ namespace RecastSharp.RecastNative
             [MarshalAs(UnmanagedType.I1)] bool buildBvTree,
             out IntPtr outData, out int outDataSize);
 
+        /* Detail mesh -> world-space triangle soup (9 floats/tri). Free outVerts with dtwFree. */
+        [DllImport(DLL_NAME)]
+        [return: MarshalAs(UnmanagedType.I1)]
+        public static extern bool rcwGetPolyMeshDetailTriVerts(IntPtr polyMeshDetail, out IntPtr outVerts, out int outFloatCount);
+
     }
 }
