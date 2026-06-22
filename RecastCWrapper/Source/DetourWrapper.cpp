@@ -4,7 +4,9 @@
 #include "DetourNavMesh.h"
 
 #include "DetourNavMeshQuery.h"
+#include "Recast.h"
 #include <iostream>
+#include <cstring>
 
 #define MAX_PATH_LENGTH         740//74
 #define MAX_POINT_PATH_LENGTH   740//74
@@ -409,4 +411,53 @@ EXPORT_API bool inRangeYZX(const float* v1, const float* v2, float r, float h)
 EXPORT_API float dtSqrt(float x)
 {
 	return dtMathSqrtf(x);
+}
+
+// Turns a built Recast poly mesh + detail mesh into a Detour tile blob (the bytes a navmesh
+// addTile / a NavMeshSet ".nav" file stores). Encapsulates the area->flag assignment and the
+// dtNavMeshCreateParams plumbing so the managed side never has to marshal the mesh arrays.
+// Every poly in a built poly mesh is walkable, so they all get a single WALK flag (0x01).
+// outData is allocated by Detour (dtAlloc); free it with dtwFree after copying it out.
+EXPORT_API bool rcwCreateNavMeshTileData(void* polyMesh, void* polyMeshDetail,
+	float walkableHeight, float walkableRadius, float walkableClimb,
+	float cs, float ch, int tileX, int tileY, bool buildBvTree,
+	unsigned char** outData, int* outDataSize)
+{
+	auto pmesh = (rcPolyMesh*)polyMesh;
+	auto dmesh = (rcPolyMeshDetail*)polyMeshDetail;
+
+	for (int i = 0; i < pmesh->npolys; ++i)
+	{
+		if (pmesh->areas[i] == RC_WALKABLE_AREA)
+			pmesh->areas[i] = 0;          // SAMPLE_POLYAREA_GROUND
+		pmesh->flags[i] = 1;              // SAMPLE_POLYFLAGS_WALK
+	}
+
+	dtNavMeshCreateParams params;
+	memset(&params, 0, sizeof(params));
+	params.verts = pmesh->verts;
+	params.vertCount = pmesh->nverts;
+	params.polys = pmesh->polys;
+	params.polyAreas = pmesh->areas;
+	params.polyFlags = pmesh->flags;
+	params.polyCount = pmesh->npolys;
+	params.nvp = pmesh->nvp;
+	params.detailMeshes = dmesh->meshes;
+	params.detailVerts = dmesh->verts;
+	params.detailVertsCount = dmesh->nverts;
+	params.detailTris = dmesh->tris;
+	params.detailTriCount = dmesh->ntris;
+	params.walkableHeight = walkableHeight;
+	params.walkableRadius = walkableRadius;
+	params.walkableClimb = walkableClimb;
+	params.tileX = tileX;
+	params.tileY = tileY;
+	params.tileLayer = 0;
+	rcVcopy(params.bmin, pmesh->bmin);
+	rcVcopy(params.bmax, pmesh->bmax);
+	params.cs = cs;
+	params.ch = ch;
+	params.buildBvTree = buildBvTree;
+
+	return dtCreateNavMeshData(&params, outData, outDataSize);
 }

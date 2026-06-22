@@ -48,6 +48,12 @@ EXPORT_API bool getSteerTarget(dtwNavMeshQuery* query, const float* startPos, co
 	float* steerPos, unsigned char& steerPosFlag, dtPolyRef& steerPosRef);
 
 EXPORT_API float dtSqrt(float x);
+
+// Build a Detour tile blob from a Recast poly mesh + detail mesh (see DetourWrapper.cpp).
+EXPORT_API bool rcwCreateNavMeshTileData(void* polyMesh, void* polyMeshDetail,
+	float walkableHeight, float walkableRadius, float walkableClimb,
+	float cs, float ch, int tileX, int tileY, bool buildBvTree,
+	unsigned char** outData, int* outDataSize);
 EXPORT_API bool inRangeYZX(const float* v1, const float* v2, float r, float h);
 EXPORT_API unsigned int fixupCorridor(dtPolyRef* path, unsigned int npath, unsigned int maxPath,
 	const dtPolyRef* visited, unsigned int nvisited);

@@ -105,5 +105,15 @@ namespace RecastSharp.RecastNative
         [DllImport(DLL_NAME)]
         public static extern void rcwCalcGridSize(ref float bmin, ref float bmax, float cs, ref int w, ref int h);
 
+        /* Navmesh tile data: poly mesh + detail mesh -> Detour tile blob (free outData with dtwFree). */
+        [DllImport(DLL_NAME)]
+        [return: MarshalAs(UnmanagedType.I1)]
+        public static extern bool rcwCreateNavMeshTileData(
+            IntPtr polyMesh, IntPtr polyMeshDetail,
+            float walkableHeight, float walkableRadius, float walkableClimb,
+            float cs, float ch, int tileX, int tileY,
+            [MarshalAs(UnmanagedType.I1)] bool buildBvTree,
+            out IntPtr outData, out int outDataSize);
+
     }
 }
