@@ -6,6 +6,12 @@
 
 class WrappedContext : rcContext
 {
+public:
+	// Disable Recast's log/timer output (the per-tile delaunayHull etc. warnings are just noise
+	// for batch navmesh building).
+	WrappedContext() : rcContext(false) {}
+
+private:
 	void doLog(const rcLogCategory cat, const char* msg, const int len) override
 	{
 		(void)(len);
